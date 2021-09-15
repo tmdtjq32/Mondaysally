@@ -9,6 +9,7 @@ const {emit} = require("nodemon");
 const admin = require('firebase-admin');
 const request = require('request');
 const NAVER_KEY = require("../../../config/NAVER_SENS_CREDENTIAL.json");
+const FCMadmin = require("../../../config/FCM");
 
 const CryptoJS = require("crypto-js");
 const SHA256 = require("crypto-js/sha256");
@@ -435,7 +436,6 @@ exports.delCompanyDepartment = async function (req, res) {
 exports.CompanyMember = async function (req, res) {
     const adminID = req.verifiedToken.adminID;
     const companyIdx = req.verifiedToken.companyIdx;
-    const page = req.query.page;
 
     const Rows = await userProvider.companyCheck(companyIdx);
 
@@ -453,10 +453,7 @@ exports.CompanyMember = async function (req, res) {
     if (IDRows.status != 'ACTIVE')
         return res.send(errResponse(baseResponse.SIGNUP_COMPANY_WRONG));
 
-    if (!page)
-        return res.send(errResponse(baseResponse.SIG_PAGE_NONE));
-
-    const Response = await userProvider.selectMemberPage(companyIdx,page);
+    const Response = await userProvider.selectMemberPage(companyIdx);
 
     if (Response.members.length == 0)
         return res.send(errResponse(baseResponse.SIG_PAGE_WRONG));
@@ -571,8 +568,6 @@ exports.CompanyMemberByid = async function (req, res) {
     const adminID = req.verifiedToken.adminID;
     const companyIdx = req.verifiedToken.companyIdx;
     const memberID = req.params.idx;
-    console.log(companyIdx);
-    console.log(memberID);
 
     const Rows = await userProvider.companyCheck(companyIdx);
 
@@ -592,15 +587,13 @@ exports.CompanyMemberByid = async function (req, res) {
 
     const memberIDchk = await userProvider.memberIDCheck(companyIdx,memberID);
 
-    console.log(memberIDchk);
-
     if (!memberIDchk)
         return res.send(errResponse(baseResponse.SIGNUP_MEMBER_WRONG));
 
-    if (!(memberIDchk.status == 'W' || memberIDchk.status == 'L'))
-        return res.send(errResponse(baseResponse.SIGNUP_MEMBER_OUT));
-
     const Response = await userProvider.selectMemberById(memberID);
+    if (Response.status == 'W' || Response.status == 'L'){
+        Response.status = 'E';
+    }
 
     return res.send(response(baseResponse.SUCCESS,Response));
 };
@@ -685,10 +678,6 @@ exports.CompanyMemberDel = async function (req, res) {
 exports.getGift = async function (req, res) {
     const adminID = req.verifiedToken.adminID;
     const companyIdx = req.verifiedToken.companyIdx;
-    const page = req.query.page;
-
-    if (!page)
-        return res.send(errResponse(baseResponse.SIG_PAGE_NONE));
 
     const Rows = await userProvider.companyCheck(companyIdx);
 
@@ -706,7 +695,7 @@ exports.getGift = async function (req, res) {
     if (IDRows.status != 'ACTIVE')
         return res.send(errResponse(baseResponse.SIGNUP_COMPANY_WRONG));
 
-    const Response = await userProvider.selectGifInfo(companyIdx,page);
+    const Response = await userProvider.selectGifInfo(companyIdx);
 
     if (Response.gifts.length == 0)
         return res.send(errResponse(baseResponse.SIG_PAGE_WRONG));
@@ -784,11 +773,9 @@ exports.IDbyGift = async function (req, res) {
 exports.giftLogLists = async function (req, res) {
     const adminID = req.verifiedToken.adminID;
     const companyIdx = req.verifiedToken.companyIdx;
-    const page = req.query.page;
     const month = req.query.month;
 
     const Rows = await userProvider.companyCheck(companyIdx);
-    console.log(companyIdx);
 
     if (!Rows)
         return res.send(errResponse(baseResponse.SIGNIN_COMPANY_WRONG));
@@ -804,13 +791,10 @@ exports.giftLogLists = async function (req, res) {
     if (IDRows.status != 'ACTIVE')
         return res.send(errResponse(baseResponse.SIGNUP_COMPANY_WRONG));
 
-    if (!page)
-        return res.send(errResponse(baseResponse.SIG_PAGE_NONE));
-
     if (month && !regexMonth.test(month))
         return res.send(errResponse(baseResponse.SIG_MONTH_TYPE));
 
-    const Response = await userProvider.selectGiftLogList(companyIdx,page,month);
+    const Response = await userProvider.selectGiftLogList(companyIdx,month);
 
     return res.send(response(baseResponse.SUCCESS,Response));
 };
@@ -974,12 +958,7 @@ exports.deleteGift = async function (req, res) {
 exports.cloverLists = async function (req, res) {
     const adminID = req.verifiedToken.adminID;
     const companyIdx = req.verifiedToken.companyIdx;
-    const page = req.query.page;
     const month = req.query.month;
-    console.log(month);
-
-    if (!page)
-        return res.send(errResponse(baseResponse.SIG_PAGE_NONE));
 
     if (month && !regexMonth.test(month))
         return res.send(errResponse(baseResponse.SIG_MONTH_TYPE));
@@ -1000,7 +979,7 @@ exports.cloverLists = async function (req, res) {
     if (IDRows.status != 'ACTIVE')
         return res.send(errResponse(baseResponse.SIGNUP_COMPANY_WRONG));
 
-    const result = await userProvider.selectCloverListbyDate(companyIdx,month,page);
+    const result = await userProvider.selectCloverListbyDate(companyIdx,month);
 
     if (result.cloverLists.length == 0)
         return res.send(errResponse(baseResponse.SIG_PAGE_WRONG));

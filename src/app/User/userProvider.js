@@ -84,11 +84,9 @@ exports.selectDepartmentChk = async function (departmentIdx) {
     return result;
 };
 
-exports.selectMemberPage = async function (companyIdx,page) {
+exports.selectMemberPage = async function (companyIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
-    const params = [companyIdx,(page-1)*30];
-    console.log(companyIdx);
-    const result = await userDao.selectMemberByPage(connection,params);
+    const result = await userDao.selectMemberByPage(connection,companyIdx);
     connection.release();
 
     return result;
@@ -180,11 +178,9 @@ exports.memberIDCheck = async function (companyIdx,memberID) {
     return result;
 };
 
-exports.selectGifInfo = async function (companyIdx,page) {
+exports.selectGifInfo = async function (companyIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
-    const params = [companyIdx,(page-1)*30];
-    const result = await userDao.selectGiftlist(connection,params);
-    console.log(result);
+    const result = await userDao.selectGiftlist(connection,companyIdx);
 
     connection.release();
 
@@ -216,17 +212,17 @@ exports.selectGifInfonyID = async function (giftID) {
     return obj;
 };
 
-exports.selectGiftLogList = async function (companyIdx,page,month) {
+exports.selectGiftLogList = async function (companyIdx,month) {
     const connection = await pool.getConnection(async (conn) => conn);
 
     if (month){
-        const result = await userDao.selectGiftLoglistbyMonth(connection,companyIdx,page,month);
+        const result = await userDao.selectGiftLoglistbyMonth(connection,companyIdx,month);
         connection.release();
 
         return result;
     }
     else{
-        const result = await userDao.selectGiftLoglist(connection,companyIdx,page);
+        const result = await userDao.selectGiftLoglist(connection,companyIdx);
         connection.release();
 
         return result;
@@ -249,10 +245,10 @@ exports.selectGiftLogchk = async function (giftLogID) {
     return result;
 };
 
-exports.selectCloverListbyDate = async function (companyIdx,date,page) {
+exports.selectCloverListbyDate = async function (companyIdx,date) {
     const connection = await pool.getConnection(async (conn) => conn);
     if (!date){  // 전체
-        const params = [companyIdx,companyIdx,(page-1)*30];
+        const params = [companyIdx,companyIdx];
         const result = await userDao.selectCloverlists(connection,params);
         connection.release();
         var obj = {};
@@ -262,7 +258,7 @@ exports.selectCloverListbyDate = async function (companyIdx,date,page) {
         return obj;
     }
     else { // 월별
-        const param = [companyIdx,date,(page-1)*30];
+        const param = [companyIdx,date];
         const result = await userDao.monthCloverlists(connection,param);
         connection.release();
         var obj = {};

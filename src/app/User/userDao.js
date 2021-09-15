@@ -253,23 +253,16 @@ async function selectCompanyDepartmentUse(connection,params){
     return Row;
 }
 
-async function selectMemberByPage(connection,parmas){
+async function selectMemberByPage(connection,companyIdx){
     const allQuery = `
         select imgUrl, nickname, department, position from Member join CompanyDepartment
          on CompanyDepartment.idx = Member.companyDepartmentIdx
         where (Member.status = 'W' or Member.status = 'L') and Member.companyIdx = ?;
     `;
-     const Query = `
-         select imgUrl, nickname, department, position from Member join CompanyDepartment
-             on CompanyDepartment.idx = Member.companyDepartmentIdx
-         where (Member.status = 'W' or Member.status = 'L') and Member.companyIdx = ?
-             limit ?, 30;
-    `;
     var obj = {};
-    const [allRow] = await connection.query(allQuery,parmas[0]);
-    const [Row] = await connection.query(Query,parmas);
+    const [allRow] = await connection.query(allQuery,companyIdx);
     obj.totalCount = allRow.length;
-    obj.members = Row;
+    obj.members = allRow;
 
     return obj;
 }
@@ -371,20 +364,14 @@ async function deleteMemberOut(connection,memberID){
     return Row;
 }
 
-async function selectGiftlist(connection,params){
-    const AQuery = `
+async function selectGiftlist(connection,companyIdx){
+    const Query = `
         select imgUrl, name from Gift where status = 'ACTIVE' and companyIdx = ?;
     `;
-    const Query = `
-        select imgUrl, name from Gift where status = 'ACTIVE' and companyIdx = ?
-        limit ?, 30;
-    `;
     var obj = {};
-    console.log(params[0]);
-    const [Row] = await connection.query(AQuery,params[0]);
-    const [Result] = await connection.query(Query,params);
+    const [Row] = await connection.query(Query,companyIdx);
     obj.totalCount = Row.length;
-    obj.gifts = Result;
+    obj.gifts = Row;
 
     return obj;
 }
@@ -416,7 +403,7 @@ async function selectGiftbyID(connection,giftID){
     return Row;
 }
 
-async function selectGiftLoglist(connection,companyIdx,page){
+async function selectGiftLoglist(connection,companyIdx){
     const Query = `
         select GiftLog.idx, Member.imgUrl, Member.nickname, Gift.name, GiftLog.isAccepted,
             date_format(GiftLog.createdAt,'%Y-%m-%d %H:%i:%s') as createdAt from GiftLog
@@ -424,87 +411,40 @@ async function selectGiftLoglist(connection,companyIdx,page){
             join Member on Member.idx = GiftLog.memberIdx
         where Gift.companyIdx = ? and GiftLog.status = 'ACTIVE';
     `;
-    const Query2 = `
-        select GiftLog.idx, Member.imgUrl, Member.nickname, Gift.name, GiftLog.isAccepted,
-                date_format(GiftLog.createdAt,'%Y-%m-%d %H:%i:%s') as createdAt
-        from GiftLog
-                 join Gift on GiftLog.giftIdx = Gift.idx
-                 join Member on Member.idx = GiftLog.memberIdx
-        where Gift.companyIdx = ? and GiftLog.status = 'ACTIVE' and GiftLog.isAccepted is null;
-    `;
-    const Query3 = `
-        select GiftLog.idx, Member.imgUrl, Member.nickname, Gift.name, GiftLog.isAccepted,
-               date_format(GiftLog.createdAt,'%Y-%m-%d %H:%i:%s') as createdAt
-        from GiftLog
-                 join Gift on GiftLog.giftIdx = Gift.idx
-                 join Member on Member.idx = GiftLog.memberIdx
-        where Gift.companyIdx = ? and GiftLog.status = 'ACTIVE' and GiftLog.isAccepted = 'N';
-    `;
-    const Query4 = `
-        select GiftLog.idx, Member.imgUrl, Member.nickname, Gift.name, GiftLog.isAccepted,
-               date_format(GiftLog.createdAt,'%Y-%m-%d %H:%i:%s') as createdAt
-        from GiftLog
-                 join Gift on GiftLog.giftIdx = Gift.idx
-                 join Member on Member.idx = GiftLog.memberIdx
-        where Gift.companyIdx = ? and GiftLog.status = 'ACTIVE' and GiftLog.isAccepted = 'Y';
-    `;
-    let start = (page-1) * 30;
     const result = {};
+    var Row2 = [], Row3 = [], Row4 = [];
     const [Row] = await connection.query(Query,companyIdx);
-    const [Row2] = await connection.query(Query2,companyIdx);   // 승인대기
-    const [Row3] = await connection.query(Query3,companyIdx);   // 승인거부
-    const [Row4] = await connection.query(Query4,companyIdx);   // 승인완료
-    var Rowpage = {'totalCount': Row.length,giftLogs : []};
-    var Rowpage2 = {'totalCount': Row2.length, giftLogs : []};
-    var Rowpage3 = {'totalCount': Row3.length, giftLogs : []};
-    var Rowpage4 = {'totalCount': Row4.length, giftLogs : []};
-    for (let i = start, m = 0; i < start + 30; i++,m++){
-        if (m == 30){
-            break;
+    for (let i = 0; i < Row.length; i++){
+        if (!Row[i].isAccepted){
+            Row2.push(Row[i]);
         }
-        if (Row[i]){
-            Rowpage.giftLogs.push(Row[i]);
+        else if (Row[i].isAccepted === 'N'){
+            Row3.push(Row[i]);
         }
-        if (Row2[i]){
-            Rowpage2.giftLogs.push(Row2[i]);
-        }
-        if (Row3[i]){
-            Rowpage3.giftLogs.push(Row3[i]);
-        }
-        if (Row4[i]){
-            Rowpage4.giftLogs.push(Row4[i]);
+        else if (Row[i].isAccepted === 'Y'){
+            Row4.push(Row[i]);
         }
     }
-    result.allGiftLog = Rowpage;
-    result.permissionWaitGiftLog = Rowpage2;
-    result.permissionRejectGiftLog = Rowpage3;
-    result.permissionCompleteGiftLog = Rowpage4;
+
+    result.allGiftLog = {'totalCount': Row.length,'giftLogs' : Row};
+    result.permissionWaitGiftLog = {'totalCount': Row2.length, 'giftLogs' : Row2};
+    result.permissionRejectGiftLog = {'totalCount': Row3.length, 'giftLogs' : Row3};
+    result.permissionCompleteGiftLog = {'totalCount': Row4.length, 'giftLogs' : Row4};
 
     return result;
 }
 
-async function selectGiftLoglistbyMonth(connection,companyIdx,page,month){
+async function selectGiftLoglistbyMonth(connection,companyIdx,month){
     const Query = `
         select GiftLog.idx, Member.imgUrl, Member.nickname, Gift.name, GiftLog.isAccepted,
                date_format(GiftLog.createdAt,'%Y-%m-%d %H:%i:%s') as createdAt from GiftLog
                join Gift on GiftLog.giftIdx = Gift.idx
                join Member on Member.idx = GiftLog.memberIdx
-        where Gift.companyIdx = ? and GiftLog.status = 'ACTIVE' and
-            date_format(GiftLog.createdAt,'%y-%m') = ?;
+        where Gift.companyIdx = ? and GiftLog.status = 'ACTIVE' and date_format(GiftLog.createdAt,'%Y-%m') = ?;
     `;
     const params = [companyIdx,month];
-    console.log(params);
     const [Row] = await connection.query(Query,params);
-    let start = (page-1) * 30;
-    var Rowpage = {'totalCount' : Row.length,'giftLogs' : []}
-    for (let i = start, m = 0; i < start + 30; i++,m++){
-        if (m == 30 || i == Row.length){
-            break;
-        }
-        if (Row[i]){
-            Rowpage.giftLogs.push(Row[i]);
-        }
-    }
+    var Rowpage = {'totalCount' : Row.length,'giftLogs' : Row};
 
     return Rowpage;
 }
@@ -550,7 +490,9 @@ async function selectGiftLogID(connection,giftLogID){
 
 async function GiftLogChk(connection,giftLogID){
     const Query = `
-    select * from GiftLog where idx = ?;
+    select GiftLog.*, Gift.name,Member.firebaseToken, Member.isAos from GiftLog 
+    join Gift on Gift.idx = GiftLog.giftIdx
+    join Member on Member.idx = GiftLog.memberIdx where GiftLog.idx = ?;
     `;
 
     const [Row] = await connection.query(Query,giftLogID);
@@ -620,7 +562,7 @@ async function updateMemberPoint(connection,params){
     return Row;
 }
 
-async function selectCloverlists(connection,ID){
+async function selectCloverlists(connection,date){
     const Query = `
         select Member.idx, Member.nickname, Member.imgUrl as memberImg,CompanyDepartment.department,
                CompanyDepartment.position, Member.accumulatedClover,
@@ -631,10 +573,10 @@ async function selectCloverlists(connection,ID){
                join GiftOption on Clover.optionIdx = GiftOption.idx
                where Clover.companyIdx = ? and Clover.workIdx is null and Clover.status ='ACTIVE'
                group by Clover.memberIdx) as A on A.memberIdx = Member.idx
-        where Member.companyIdx = ? limit ?, 30;
+        where Member.companyIdx = ?;
     `;
 
-    const [Row] = await connection.query(Query,ID);
+    const [Row] = await connection.query(Query,date);
     for (let i = 0; i < Row.length; i++){
         if (!Row[i].money){
             Row[i].money = '0';
@@ -655,7 +597,7 @@ async function monthCloverlists(connection,param){
                where workIdx is null and Clover.status = 'ACTIVE' group by memberIdx) as A on A.memberIdx = Member.idx
             where Clover.companyIdx = ? and Clover.status = 'ACTIVE' and workIdx is not null
           and date_format(Clover.createdAt,'%Y-%m') = ? group by Member.idx
-        order by Member.idx limit ?, 30;
+        order by Member.idx;
     `;
 
     const [Row] = await connection.query(Query,param);
@@ -664,7 +606,7 @@ async function monthCloverlists(connection,param){
 
 async function selectMemberByID(connection,memberID){
     const Query = `
-        select * from Member where idx = ? and (status = 'W' or status = 'L');
+        select * from Member where idx = ?;
     `;
 
     const [Row] = await connection.query(Query,memberID);

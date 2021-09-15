@@ -6,6 +6,7 @@ const userDao = require("./userDao");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response} = require("../../../config/response");
 const {errResponse} = require("../../../config/response");
+const FCMadmin = require("../../../config/FCM");
 
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -322,9 +323,12 @@ exports.updateGiftLogAdmit = async function (giftLogID,permissionCode) {
         const connection = await pool.getConnection(async (conn) => conn);
         const pa = [permissionCode,giftLogID];
         const [Row] = await userDao.GiftLogChk(connection,giftLogID);
+        if (!Row){
+            return errResponse(baseResponse.SIGNUP_GIFTLOG_NONE);
+        }
         console.log(Row);
         const Result = await userDao.updateAdmitGiftLog(connection, pa);
-
+        var message;
         if (permissionCode === 'Y'){
             const [RO] = await userDao.selectMemberByID(connection,Row.memberIdx);
             console.log(RO);
@@ -335,7 +339,14 @@ exports.updateGiftLogAdmit = async function (giftLogID,permissionCode) {
             const params = [RO.currentClover - Row.usedClover,Row.memberIdx];
             const Res = await userDao.updateMemberPoint(connection, params);
             const insert = await userDao.insertClover(connection,giftLogID);
+            message = `${Row.name} 기프트 신청이 승인되었습니다!`
+            FCMadmin.fcm(Row.firebaseToken,`${Row.name}`,message);
         }
+        else if (permissionCode === 'N'){
+            message = `${Row.name} 신청이 거부되었습니다. 관리자에게 문의해주세요!`
+            FCMadmin.fcm(Row.firebaseToken,`${Row.name}`,message);
+        }
+
 
         connection.release();
 
