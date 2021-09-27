@@ -47,13 +47,13 @@ REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다
 ├── * log                               # 생성된 로그 폴더
 ├── * node_modules                    	# 외부 라이브러리 폴더 (package.json 의 dependencies)
 ├── src                     		        # 메인 로직
-│   ├── app              				        # 앱에 대한 코드 작성
-│ 	│   ├── Clover            			    # Clover 도메인 폴더
-│   │ 	├── Common          	          # Common 도메인 폴더
-│ 	│ 	├── Gift 		                    # Gift 도메인 폴더
-│ 	│ 	├── Home   		                  # Home 도메인 폴더
-│ 	│ 	├── User  		                  # User 도메인 폴더
-│ 	│ 	├── Work   		                  # Work 도메인 폴더
+│   ├── app                             # 앱에 대한 코드 작성
+│ 	│   ├── Clover                      # Clover 도메인 폴더
+│   │ 	├── Common                      # Common 도메인 폴더
+│ 	│ 	├── Gift                        # Gift 도메인 폴더
+│ 	│ 	├── Home                        # Home 도메인 폴더
+│ 	│ 	├── User                        # User 도메인 폴더
+│ 	│ 	├── Work                        # Work 도메인 폴더
 ├── .gitignore                     		  # git 에 포함되지 않아야 하는 폴더, 파일들을 작성 해놓는 곳
 ├── index.js                            # 포트 설정 및 시작 파일    
 ├── crontab.sh                          # 스케줄러를 활용한 API 호출 기능 파일
@@ -103,10 +103,4 @@ Log는 winston, winston-daily-rotate-file 라이브러리를 사용해 구성했
 
 ### [redis](https://redis.io/)
 캐시 서버로 사용하기 위해 redis를 사용할 예정입니다.
-
-
-
-
-
-
 
