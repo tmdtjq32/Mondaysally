@@ -17,4 +17,8 @@
 * 트윙클
 * 마이페이지
 
+### REST API
+REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다.
 
+### Structure
+- `config`
