@@ -98,8 +98,8 @@ Log는 winston, winston-daily-rotate-file 라이브러리를 사용해 구성했
 ### [FCM](https://firebase.google.com/docs/cloud-messaging)
 사용자에게 보낼 알람 기능을 위한 해당 API를 참고했습니다.
 
-### [crontab]
-스케줄러 기능을 위해 crontab을 사용했습니다.
+### [crontab](https://jdm.kr/blog/2)
+스케줄러 기능을 위해 해당 블로그를 참조해 crontab을 사용했습니다.
 
 ### [redis](https://redis.io/)
 캐시 서버로 사용하기 위해 redis를 사용할 예정입니다.
