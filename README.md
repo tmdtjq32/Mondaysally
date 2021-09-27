@@ -49,7 +49,7 @@ REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다
 ├── src                     		        # 메인 로직
 │   ├── app                             # 앱에 대한 코드 작성
 │ 	│   ├── Clover                      # Clover 도메인 폴더
-│   │ 	├── Common                      # Common 도메인 폴더
+│   |   |── Common                      # Common 도메인 폴더
 │ 	│ 	├── Gift                        # Gift 도메인 폴더
 │ 	│ 	├── Home                        # Home 도메인 폴더
 │ 	│ 	├── User                        # User 도메인 폴더
