@@ -50,11 +50,11 @@ REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다
 │   ├── app                             # 앱에 대한 코드 작성
 │ 	│   ├── Clover                      # Clover 도메인 폴더
 │ 	│   ├── Common                      # Common 도메인 폴더
-│ 	│   ├── Gift                      # Gift 도메인 폴더
-│ 	│   ├── Home                      # Home 도메인 폴더
-│ 	│   ├── Twinkle                      # Twinkle 도메인 폴더
-│ 	│   ├── User                      # User 도메인 폴더
-│ 	│   ├── Work                      # Work 도메인 폴더
+│ 	│   ├── Gift                        # Gift 도메인 폴더
+│ 	│   ├── Home                        # Home 도메인 폴더
+│ 	│   ├── Twinkle                     # Twinkle 도메인 폴더
+│ 	│   ├── User                        # User 도메인 폴더
+│ 	│   ├── Work                        # Work 도메인 폴더
 ├── .gitignore                     		  # git 에 포함되지 않아야 하는 폴더, 파일들을 작성 해놓는 곳
 ├── index.js                            # 포트 설정 및 시작 파일    
 ├── crontab.sh                          # 스케줄러를 활용한 API 호출 기능 파일
