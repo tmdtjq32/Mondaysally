@@ -25,9 +25,10 @@ REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다
 > Route - Controller - Provider/Service - DAO
 
 - Route: Request에서 보낸 라우팅 처리
-- Controller: Request를 처리하고 Response 해주는 곳. (Provider/Service에 넘겨주고 다시 받아온 결과값을 형식화), 형식적 Validation
-- Provider/Service: 비즈니스 로직 처리, 의미적 Validation
-- DAO: Data Access Object의 줄임말. Query가 작성되어 있는 곳.  
+- Controller: Request를 처리하고 Response 반환. (Provider/Service에 넘겨주고 다시 받아온 결과값을 형식화), 형식적 Validation
+- Provider: 비즈니스 로직 처리, 의미적 Validation과 조회 기능 로직 처리
+- Service: 비즈니스 로직 처리, 의미적 Validation 생성/수정/삭제 기능 로직 처리
+- DAO: Data Access Object의 줄임말. Query가 작성되어 있는 부분 
 
 > `Request` -> Route -> Controller -> Service/Provider -> DAO -> DB -> DAO -> Service/Provider -> Controller -> Route -> `Response`
 
@@ -80,12 +81,12 @@ REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다
 # Framework and Modules
 ### [Node.js](https://nodejs.org/ko/)
 -  `node index.js` 를 통해서 js 파일을 실행한다.
--  node는 js 파일을 실행할 때 `package.json` 이라는 파일을 통해서 어떤 환경으로 구동하는지, 어떤 라이브러리들을 썼는지(dependencies) 등의 기본적인 설정값 들을 참고한다.
-- `npm install` npm(node package manager)을 통해 package.json에 있는 dependencies 등을 참고하여 node_modules 폴더를 생성하고 라이브러리 파일을 다운로드 한다. 이 라이브러리들은 사용하고 싶은 파일에서 require 하여 사용할 수 있다.
+-  node는 js 파일을 실행할 때 `package.json` 이라는 파일을 통해서 어떤 환경으로 구동하는지, 어떤 라이브러리들을 썼는지(dependencies) 등의 기본적인 설정값 들을 참고했습니다.
+- `npm install` npm(node package manager)을 통해 package.json에 있는 dependencies 등을 참고하여 node_modules 폴더를 생성하고 라이브러리 파일을 다운로드 했습니다. 이 라이브러리들은 사용하고 싶은 파일에서 require 하여 사용했습니다.
 
 ### [Express](https://expressjs.com/ko/)
 config > express.js 에서 express 프레임워크를 기반으로 한 app 모듈을 export 하도록 하여 어느 폴더에서든 사용할 수 있도록 구성했습니다.
-`index.js`에서 express에서 만든 app이 3000번 포트를 Listen 하도록 구성했다. 본인이 사용하고 싶은 포트 번호는 이곳에서 지정해주면 된다. 
+`index.js`에서 express에서 만든 app이 3000번 포트를 Listen 하도록 구성했습니다.
 
 ### [mysql2](https://www.npmjs.com/package/mysql2)
 Database는 config > database.js에 mysql2 라이브러리를 사용해 구성했다. 자세한 설명과 추가적인 기능들은 mysql2 라이브러리의 공식 README를 참고했습니다.
