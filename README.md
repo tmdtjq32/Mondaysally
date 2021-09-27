@@ -10,7 +10,7 @@
 젊은 층(20대 중후반 - 30대 초반)이 많은 스타트업 / 중소기업
 
 ## 🌟System
-* 기업/직원등록 
+* 기업/직원등록 - Webadmin에서 진행
 * 출/퇴근
 * 기프트 히스토리
 * 기프트 샵
@@ -99,6 +99,9 @@ Log는 winston, winston-daily-rotate-file 라이브러리를 사용해 구성했
 
 ### [FCM](https://firebase.google.com/docs/cloud-messaging)
 사용자에게 보낼 알람 기능을 위한 해당 API를 참고했습니다.
+
+### [Naver SENS API](https://ncloud.com)
+웹어드민에서 관리자 인증시 인증번호 발급을 위해 사용했습니다.
 
 ### [crontab](https://jdm.kr/blog/2)
 스케줄러 기능을 위해 해당 블로그를 참조해 crontab을 사용했습니다.
