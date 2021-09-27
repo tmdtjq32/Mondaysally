@@ -31,7 +31,7 @@ REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다
 
 > `Request` -> Route -> Controller -> Service/Provider -> DAO -> DB -> DAO -> Service/Provider -> Controller -> Route -> `Response`
 
-## ✨file Structure
+## ✨Structure
 앞에 (*)이 붙어있는 파일(or 폴더)은 추가적인 과정 이후에 생성된다.
 ```
 ├── config                              # 설정 파일
@@ -49,7 +49,7 @@ REST API의 기본 구성 원리를 준수하여 라우팅을 진행했습니다
 ├── src                     		        # 메인 로직
 │   ├── app                             # 앱에 대한 코드 작성
 │ 	│   ├── Clover                      # Clover 도메인 폴더
-│   |   |── Common                      # Common 도메인 폴더
+│ 	│   ├── Common                      # Common 도메인 폴더
 │ 	│ 	├── Gift                        # Gift 도메인 폴더
 │ 	│ 	├── Home                        # Home 도메인 폴더
 │ 	│ 	├── User                        # User 도메인 폴더
