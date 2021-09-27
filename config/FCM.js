@@ -38,3 +38,35 @@ exports.fcm = async function (token, title, body){
             return error;
         });
 }
+
+exports.AndroidFcm = async function (token, title, body, category, idx){
+    const message = {
+        name: '먼데이셀리',
+        android: {
+            data: {
+                imageUrl: 'https://firebasestorage.googleapis.com/v0/b/modaysally.appspot.com/o/test%2Fcompany-logo%2Flawofsally.PNG?alt=media&token=72ea95de-ee81-491d-9450-a312974aa546',
+                title: title,
+                body: body,
+                category: category,
+            }
+        },
+        token: token
+    };
+
+    if (category){
+        message.android.data.gift = idx;
+    }
+
+// Send a message to the device corresponding to the provided
+// registration token.
+    admin.messaging().send(message)
+        .then((response) => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+            return response;
+        })
+        .catch((error) => {
+            console.log('Error sending message:', error);
+            return error;
+        });
+}

@@ -340,11 +340,21 @@ exports.updateGiftLogAdmit = async function (giftLogID,permissionCode) {
             const Res = await userDao.updateMemberPoint(connection, params);
             const insert = await userDao.insertClover(connection,giftLogID);
             message = `${Row.name} 기프트 신청이 승인되었습니다!`
-            FCMadmin.fcm(Row.firebaseToken,`${Row.name}`,message);
+            if (Row.isAos === 'N'){
+                FCMadmin.fcm(Row.firebaseToken,`${Row.name}`,message);
+            }
+            else{
+                FCMadmin.AndroidFcm(Row.firebaseToken,`${Row.name}`,message,'기프트','승인');
+            }
         }
         else if (permissionCode === 'N'){
             message = `${Row.name} 신청이 거부되었습니다. 관리자에게 문의해주세요!`
-            FCMadmin.fcm(Row.firebaseToken,`${Row.name}`,message);
+            if (Row.isAos === 'N'){
+                FCMadmin.fcm(Row.firebaseToken,`${Row.name}`,message);
+            }
+            else{
+                FCMadmin.AndroidFcm(Row.firebaseToken,`${Row.name}`,message,'기프트','거절');
+            }
         }
 
 

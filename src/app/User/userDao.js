@@ -490,9 +490,10 @@ async function selectGiftLogID(connection,giftLogID){
 
 async function GiftLogChk(connection,giftLogID){
     const Query = `
-    select GiftLog.*, Gift.name,Member.firebaseToken, Member.isAos from GiftLog 
+    select GiftLog.*, Gift.name,Member.firebaseToken, Member.isAos, Twinkle.idx as twinkleIdx from GiftLog 
     join Gift on Gift.idx = GiftLog.giftIdx
-    join Member on Member.idx = GiftLog.memberIdx where GiftLog.idx = ?;
+    join Member on Member.idx = GiftLog.memberIdx
+    left join Twinkle on Twinkle.giftLogIdx = GiftLog.idx where GiftLog.idx = ?;
     `;
 
     const [Row] = await connection.query(Query,giftLogID);
