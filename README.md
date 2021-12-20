@@ -109,3 +109,4 @@ Log는 winston, winston-daily-rotate-file 라이브러리를 사용해 구성했
 ### [redis](https://redis.io/)
 캐시 서버로 사용하기 위해 redis를 사용할 예정입니다.
 
+소스 코드 참고 [https://github.com/tmdtjq32/Mondaysally/]
